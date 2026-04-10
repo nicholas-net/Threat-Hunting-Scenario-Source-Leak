@@ -409,7 +409,7 @@ EmberForgeX_CL
 
 ---
 
-## Flag 17 – Primary C2 IP
+## Flag 18 – Primary C2 IP
 
 **Objective**: DNS queries resolve domains to IP addresses. The QueryResults field inside the EventCode 22 raw XML contains the resolved IPs.
 
@@ -431,7 +431,7 @@ EmberForgeX_CL
 
 ---
 
-## Flag 18 – Injection Chain
+## Flag 19 – Injection Chain
 
 **Objective**: The attacker injected code from one process into another to hide. Sysmon EventCode 8 (CreateRemoteThread) captures this. Trace the injection chain.
 
@@ -454,7 +454,7 @@ EmberForgeX_CL
 
 <h1>How Did They Elevate?</h1>
 
-## Flag 19 – UAC Bypass Binary
+## Flag 20 – UAC Bypass Binary
 
 **Objective**: Certain Windows executables are trusted to auto-elevate without a UAC prompt. Attackers hijack what these binaries execute via registry modifications. Look for registry changes (EventCode 13) followed immediately by a trusted binary execution.
 
@@ -484,7 +484,7 @@ EmberForgeX_CL
 
 ---
 
-## Flag 20 – Registry Bypass Enabler
+## Flag 21 – Registry Bypass Enabler
 
 **Objective**: The UAC bypass works by creating a specific registry value that redirects execution. Two modifications were made in quick succession. One set the payload path. The other enables the hijack. What is that value name?
 
@@ -503,7 +503,7 @@ EmberForgeX_CL
 
 ---
 
-## Flag 21 – Stable Injection Chain
+## Flag 22 – Stable Injection Chain
 
 **Objective**: After the UAC bypass, the elevated beacon performed a second injection for long-term stability. The source process was different from the first injection, and the target was running in a completely different security context.
 
@@ -526,7 +526,7 @@ EmberForgeX_CL
 
 **Notes:** The attacker performed a second injection of their code from `C:\Users\Public\update.exe` into `NT AUTHORITY\SYSTEM`, a highly privileged account used by the Windows OS. 
 
-## Flag 22 – Credential Dumping Process
+## Flag 23 – Credential Dumping Process
 
 **Objective**: LSASS holds credentials for every logged-in user. The attacker dumped its memory to disk. The dumping tool used direct syscalls to bypass API monitoring. You will NOT find ProcessAccess events (EventCode 10) for LSASS. What process created the dump file?
   
@@ -548,7 +548,7 @@ EmberForgeX_CL
 
 ---
 
-## Flag 23 – Dump Location
+## Flag 24 – Dump Location
 
 **Objective**: You identified the process. Now find where it wrote the output. File creation events (EventCode 11) track every file written to disk. Where was the credential dump written?
 
@@ -575,7 +575,7 @@ EmberForgeX_CL
 
 <h1>What Did They Enumerate?</h1>
 
-## Flag 24 – User Enumeration
+## Flag 25 – User Enumeration
 
 **Objective**: The first command in the discovery sequence queries all user accounts in the domain.
 
@@ -601,7 +601,7 @@ EmberForgeX_CL
 
 ---
 
-## Flag 25 – Privilege Enumeration
+## Flag 26 – Privilege Enumeration
 
 **Objective**: Immediately after listing users, the attacker queried a specific group to identify who has the highest level of access.
 
@@ -625,7 +625,7 @@ EmberForgeX_CL
 
 **Notes:** The attacker used the `net` command to get a list of the accounts with admin privileges 
 
-## Flag 26 – Infrastructure Mapping
+## Flag 27 – Infrastructure Mapping
 
 **Objective**: The final discovery command locates critical infrastructure. The attacker needs to know where to go next.
 
@@ -650,7 +650,7 @@ EmberForgeX_CL
 
 <h1>How Did They Spread?</h1>
 
-## Flag 27 – Tool Staging Share
+## Flag 28 – Tool Staging Share
 
 **Objective**: Before moving laterally, the attacker set up the workstation as a distribution point. A network share was created.
 
@@ -674,7 +674,7 @@ EmberForgeX_CL
 
 ---
 
-## Flag 28 – Firewall Manipulation 
+## Flag 29 – Firewall Manipulation 
 
 **Objective**: Before moving laterally, the attacker set up the workstation as a distribution point. A network share was created.
 
@@ -701,7 +701,7 @@ EmberForgeX_CL
 
 ---
 
-## Flag 29 – Port-Escalation Parent
+## Flag 30 – Port-Escalation Parent
 
 **Objective**: After the beacon migrated to a SYSTEM process, all subsequent attacker commands on the workstation were executed as children of that process. Look at the parent process of the lateral movement commands (share creation, file copies, firewall changes).
 
@@ -727,7 +727,7 @@ EmberForgeX_CL
 
 ---
 
-## Flag 30 – Beacon Distribution
+## Flag 31 – Beacon Distribution
 
 **Objective**: The attacker pushed their primary tool to the server via Windows admin shares (C$). What was the full command?
 
@@ -753,7 +753,7 @@ EmberForgeX_CL
 
 ---
 
-## Flag 31 – LOLBin Tool Staging
+## Flag 32 – LOLBin Tool Staging
 
 **Objective**: On the server, a built-in Windows utility was abused to download tools from the attacker's staging infrastructure. What utility was used, and what was the full URL it downloaded from?
 
@@ -780,7 +780,7 @@ EmberForgeX_CL
 
 ---
 
-## Flag 32 – Remote Execution Evidence
+## Flag 33 – Remote Execution Evidence
 
 **Objective**: Now look at the server. The attacker used a remote execution technique that creates temporary Windows services with random names. These appear in EventCode 7045 in Raw_s.
 
@@ -801,7 +801,7 @@ EmberForgeX_CL
 
 ---
 
-## Flag 33 – First Command On Server
+## Flag 34 – First Command On Server
 
 **Objective**: The remote execution technique redirects command output to temporary files. The very first attacker command on any newly compromised host is almost always the same.
 
@@ -823,4 +823,227 @@ EmberForgeX_CL
 ```
 
 <img width="566" height="95" alt="Flag32" src="https://github.com/user-attachments/assets/72320e79-bd9b-4231-b8f0-1b17dce52801" /> 
+
+
+---
+
+## Flag 35 – Failed Lateral Movement
+
+**Objective**: The attacker's first lateral movement method was unreliable. Authentication logs on the server show repeated failures from an internal host. Examine EventCode 4625.
+
+**Finding**:  
+- **Authenteication Package Name**: `NTLM`
+- **IP**: 10.1.173.145
+  
+**KQL Query**:
+```kql
+ EmberForgeX_CL
+| where TimeGenerated between (datetime(2026-01-15) .. now())
+| where Computer has "16V3AU4" and EventCode_s == "4625"
+| parse Raw_s with * "Data Name='AuthenticationPackageName'>" AuthenticationPackageName "</Data>" * "Data Name='IpAddress'>" IpAddress "</Data>" *
+| project AuthenticationPackageName, IpAddress
+
+```
+
+<img width="476" height="276" alt="Flag34" src="https://github.com/user-attachments/assets/62f87093-b632-442a-a63b-2a813618e846" />
+
+
+---
+
+<h1>Did They Own The Domain?</h1>
+
+## Flag 36 – DC Arrival and Credential Extraction
+
+**Objective**: The attacker reached the Domain Controller and immediately began working towards the AD database. Trace the first command and the extraction tool.
+
+FIX MEE
+
+---
+
+## Flag 37 – Backdoor Account
+
+**Objective**: After extracting the database, the attacker created a new account designed to blend in with legitimate service accounts.
+
+**Finding**:  
+- **Account**: `svc_backup`
+  
+**KQL Query**:
+```kql
+ EmberForgeX_CL
+| where TimeGenerated between (datetime(2026-01-15) .. now())
+| where CommandLine_s has "net user"
+| project TimeCreated_t, CommandLine_s, Computer
+```
+
+<img width="902" height="187" alt="Flag36" src="https://github.com/user-attachments/assets/08a82cfc-f1ee-4ef0-a9d5-0574fb08de3d" />
+
+---
+
+## Flag 38 – Backdoor Credentials
+
+**Objective**: The account creation command included the password as a command line argument. Terrible OPSEC, but captured permanently in your logs.
+
+**Finding**:  
+- **Password**: `P@ssw0rd123!`
+  
+**KQL Query**:
+```kql
+EmberForgeX_CL
+| where TimeGenerated between (datetime(2026-01-15) .. now())
+| where CommandLine_s has "net user"
+| project TimeCreated_t, CommandLine_s, Computer
+```
+<img width="902" height="187" alt="Flag36" src="https://github.com/user-attachments/assets/08a82cfc-f1ee-4ef0-a9d5-0574fb08de3d" />
+
+---
+
+## Flag 39 – Privilege Assignment
+
+**Objective**: Creating an account is not enough. The attacker ran a second command to give it elevated privileges.
+
+**Finding**:  
+- **Command**: `Domain Admins`
+  
+**KQL Query**:
+```kql
+EmberForgeX_CL
+    | where TimeCreated_t  between (datetime(2026-01-30 22:14:42.919) .. datetime(2026-01-31 00:00))
+    | where CommandLine_s has "net group"
+    | sort by TimeCreated_t asc
+    | project-away TimeGenerated
+    | project-reorder TimeCreated_t
+    | project TimeCreated_t, CommandLine_s, host_s, dest_s
+```
+
+<img width="1247" height="189" alt="image" src="https://github.com/user-attachments/assets/7925024d-bcdc-468a-9562-c4cdb31cb6d4" />
+
+---
+
+## Flag 40 – Exposed Credential
+
+**Objective**: The attacker needed to map a network drive on the DC to access tools. The drive mapping command included authentication credentials in plain text.
+
+**Finding**:  
+- **Password**: `EmberForge2024!`
+  
+**KQL Query**:
+```kql
+EmberForgeX_CL
+| where TimeCreated_t > todatetime('2026-01-30T23:38:11.7874159Z')
+| where CommandLine_s has "net use"
+| project TimeCreated_t, CommandLine_s, Computer
+
+```
+
+<img width="875" height="108" alt="Flag39" src="https://github.com/user-attachments/assets/c1bf20fd-020d-488e-aa0e-3d29d8602ba7" />
+
+---
+
+<h1>Can They Come Back?</h1>
+
+## Flag 41 – Scheduled Task
+
+**Objective**: The attacker created a scheduled task to ensure their payload survives reboots. The name was chosen to look legitimate.
+
+**Finding**:  
+- **Task Name:** `WindowsUpdate`
+  
+**KQL Query**:
+```kql
+EmberForgeX_CL
+| where TimeCreated_t > todatetime('2026-01-30T23:38:11.7874159Z')
+| where CommandLine_s has "onstart /ru"
+| project TimeCreated_t, CommandLine_s, Computer
+
+```
+
+<img width="902" height="175" alt="Task40" src="https://github.com/user-attachments/assets/ed8dd217-ac61-4cbb-87dd-23489644af33" />
+
+**Notes:** The commandline contains the task the attacker wrote on the machine so that the payload will continue running upon the machine being rebooted.
+
+---
+
+## Flag 42 – Remote Access Tool
+
+**Objective**: A legitimate remote management application was silently installed for unattended access.
+
+**Finding**:  
+- **Task Name:** `AnyDesk`
+  
+**KQL Query**:
+```kql
+EmberForgeX_CL
+| where TimeGenerated between (datetime(2026-01-15) .. now())
+| where CommandLine_s has "--silent"
+| project TimeCreated_t, CommandLine_s, Computer
+
+```
+
+<img width="916" height="320" alt="Flag41" src="https://github.com/user-attachments/assets/47ccf57b-6543-4161-b63e-96f5332ec6c8" />
+
+**Notes:** The silent paramter will install the application in the background. 
+
+---
+
+## Flag 43 – Remote Access Configuration
+
+**Objective**: The attacker read and modified the remote access tool's configuration file. The commands reveal its full path.
+
+**Finding**:  
+- **Path:** `C:\ProgramData\AnyDesk\system.conf`
+  
+**KQL Query**:
+```kql
+EmberForgeX_CL
+| where TimeGenerated between (datetime(2026-01-15) .. now())
+| where CommandLine_s has "AnyDesk"
+| project TimeCreated_t, CommandLine_s, Computer
+
+```
+
+<img width="364" height="71" alt="Task42" src="https://github.com/user-attachments/assets/91c78a6a-91c1-4da4-b650-dc79c41fcc6f" />
+
+---
+
+## Flag 44 – Anti-Forensics Tools
+
+**Objective**: The attacker read and modified the remote access tool's configuration file. The commands reveal its full path.
+
+**Finding**:  
+- **Command:** `wevtutil`
+  
+**KQL Query**:
+```kql
+EmberForgeX_CL
+| where TimeGenerated between (datetime(2026-01-15) .. now())
+| where CommandLine_s has "wevtutil"
+| project TimeCreated_t, CommandLine_s, Computer
+
+```
+
+<img width="863" height="317" alt="Task43" src="https://github.com/user-attachments/assets/22758f8d-a05a-4c9d-bf0a-b32f64b733e5" />
+
+---
+
+## Flag 45 – Cleared Logs
+
+**Objective**: The attacker cleared more than one event log. Each clearing command targets a specific log by name. What two logs were cleared?
+
+**Finding**:  
+- **Log Names:** `System, Security`
+  
+**KQL Query**:
+```kql
+EmberForgeX_CL
+| where TimeGenerated between (datetime(2026-01-15) .. now())
+| where CommandLine_s has "wevtutil"
+| project TimeCreated_t, CommandLine_s, Computer
+
+```
+
+<img width="863" height="317" alt="Task43" src="https://github.com/user-attachments/assets/22758f8d-a05a-4c9d-bf0a-b32f64b733e5" />
+
+
+
+
 
