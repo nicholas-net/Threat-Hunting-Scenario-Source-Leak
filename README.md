@@ -1,4 +1,4 @@
-# 🕵️‍♂️ Threat Hunt Report: Source Leak
+# Threat Hunt Report: Source Leak
 
 **Date:** April 6, 2026
 
