@@ -866,7 +866,24 @@ EmberForgeX_CL
 
 **Objective**: The attacker reached the Domain Controller and immediately began working towards the AD database. Trace the first command and the extraction tool.
 
-FIX MEE
+**Finding**:  
+- **Extraction Tool**: `vssadmin`
+- **First Command**: `whoami`
+
+**KQL Query**:
+```kql
+ EmberForgeX_CL
+| where TimeGenerated between (datetime(2026-01-15) .. now())
+| where Computer has "16V3AU4" and EventCode_s == "4625"
+| parse Raw_s with * "Data Name='AuthenticationPackageName'>" AuthenticationPackageName "</Data>" * "Data Name='IpAddress'>" IpAddress "</Data>" *
+| project AuthenticationPackageName, IpAddress
+
+```
+
+<img width="2326" height="627" alt="image" src="https://github.com/user-attachments/assets/46efa7b4-d024-4458-a829-10842e63fde7" />
+
+**Notes**: Upon reaching the Domain Controller, the attacker accessed and extracted the Active Directory database `ntds.dit` using volume shadow copy techniques.
+
 
 ---
 
