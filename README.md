@@ -10,6 +10,17 @@ Directive: Investigate the full attack chain. Determine how the attacker gained 
 
 ---
 
+## Platform and Languages 
+
+ • Windows 11 VM
+ 
+ • Microsoft Sentinel SIEM
+ 
+ • Kusto Query Language (KQL)
+
+
+---
+
 ## Flag 1 – Environment Access
 
 **Objective**: What is the name of the custom log table containing the investigation data?
