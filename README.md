@@ -26,8 +26,8 @@ Directive: Investigate the full attack chain. Determine how the attacker gained 
 **Objective**: What is the name of the custom log table containing the investigation data?
 
 **Finding**:  
-- **Log Table**: `EmberForgeX_CL`  
---
+- **Log Table**: `EmberForgeX_CL`
+  
 ## Flag 2 – Target Directory
 
 **Objective**: The attacker needed to package data before stealing it. The compression commands reveal exactly what they were targeting. What directory was the source of the stolen data?
