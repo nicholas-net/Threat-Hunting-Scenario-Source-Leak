@@ -1,4 +1,4 @@
-# Threat Hunt Report: Source Leak
+# Threat Hunt Report: EmberForge Source Leak
 
 **Date:** April 6, 2026
 
@@ -7,10 +7,6 @@
 Trigger : Unreleased source code from EmberForge Studios' upcoming title "Neon Shadows" appeared on underground forums. The leaked material includes proprietary game engine components and  unreleased assets. External monitoring flagged the leak within 48 hours of it appearing.
 
 Directive: Investigate the full attack chain. Determine how the attacker gained access, what they stole, how they moved through the environment, and what persistence mechanisms remain. Prioritise scoping the damage for legal and breach notification.
-
----
-
-## 🖥️ Environment Details
 
 ---
 
