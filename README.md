@@ -452,6 +452,8 @@ EmberForgeX_CL
 ```
 <img width="1340" height="302" alt="image" src="https://github.com/user-attachments/assets/aee9be7f-0e10-4e84-adf6-a9609c8ad010" />
 
+**Notes:** The attacker injected code from `rundll32.exe` into `notepad.exe` to hide malicious activity within a legitimate process.
+
 <h1>How Did They Elevate?</h1>
 
 ## Flag 20 – UAC Bypass Binary
@@ -480,7 +482,7 @@ EmberForgeX_CL
 <img width="508" height="76" alt="image" src="https://github.com/user-attachments/assets/caba74b6-d0a5-4327-bfc9-69e354b054f1" />
 
 
-**Notes:** At `9:38 PM` you can see the the registry changes in the first screenshot followed by `rundll32.exe` being executed shortly after.
+**Notes:** At `9:38 PM` you can see the the registry changes in the first screenshot followed by `rundll32.exe` being executed shortly after. Registry modifications were followed by execution of a trusted Windows binary, indicating a UAC bypass technique to gain elevated privileges without user prompts.
 
 ---
 
@@ -500,6 +502,8 @@ EmberForgeX_CL
 
 ```
 <img width="508" height="76" alt="image" src="https://github.com/user-attachments/assets/caba74b6-d0a5-4327-bfc9-69e354b054f1" />
+
+**Notes:** The DelegateExecute registry value was used to hijack execution flow, enabling the UAC bypass.
 
 ---
 
@@ -646,6 +650,8 @@ EmberForgeX_CL
 
 <img width="506" height="70" alt="image" src="https://github.com/user-attachments/assets/7528660b-1184-4faf-95d2-13885fe9f133" />
 
+**Notes:** The attacker used nltest to identify domain controllers and map critical infrastructure.
+
 ---
 
 <h1>How Did They Spread?</h1>
@@ -671,6 +677,8 @@ EmberForgeX_CL
 ```
 
 <img width="1314" height="292" alt="image" src="https://github.com/user-attachments/assets/a92408ce-a016-42c3-b574-fdfd3d791e04" />
+
+**Notes:** A network share was created to distribute tools across systems, preparing for lateral movement.
 
 ---
 
@@ -799,6 +807,8 @@ EmberForgeX_CL
 
 <img width="1138" height="278" alt="Flag32 1" src="https://github.com/user-attachments/assets/71123723-1886-4935-824b-e9a0e0ca26ae" />
 
+**Notes:** A temporary service with a random name was created, indicating remote execution via service creation.
+
 ---
 
 ## Flag 34 – First Command On Server
@@ -818,12 +828,11 @@ EmberForgeX_CL
     | project-away TimeGenerated
     | project-reorder TimeCreated_t
     | project TimeCreated_t, CommandLine_s, Computer
-
-
 ```
 
 <img width="566" height="95" alt="Flag32" src="https://github.com/user-attachments/assets/72320e79-bd9b-4231-b8f0-1b17dce52801" /> 
 
+**Notes:** The attacker ran whoami to confirm access level on the newly compromised server.
 
 ---
 
@@ -847,6 +856,7 @@ EmberForgeX_CL
 
 <img width="476" height="276" alt="Flag34" src="https://github.com/user-attachments/assets/62f87093-b632-442a-a63b-2a813618e846" />
 
+**Notes:** Multiple failed NTLM authentication attempts show the attacker initially struggled to move laterally.
 
 ---
 
@@ -877,6 +887,8 @@ FIX MEE
 
 <img width="902" height="187" alt="Flag36" src="https://github.com/user-attachments/assets/08a82cfc-f1ee-4ef0-a9d5-0574fb08de3d" />
 
+**Notes:** The attacker created a new account `svc_backup` to maintain access while blending in with legitimate service accounts.
+
 ---
 
 ## Flag 38 – Backdoor Credentials
@@ -894,6 +906,8 @@ EmberForgeX_CL
 | project TimeCreated_t, CommandLine_s, Computer
 ```
 <img width="902" height="187" alt="Flag36" src="https://github.com/user-attachments/assets/08a82cfc-f1ee-4ef0-a9d5-0574fb08de3d" />
+
+**Notes:** The account password was exposed in plaintext within the command line, revealing poor operational security.
 
 ---
 
@@ -916,6 +930,8 @@ EmberForgeX_CL
 ```
 
 <img width="1247" height="189" alt="image" src="https://github.com/user-attachments/assets/7925024d-bcdc-468a-9562-c4cdb31cb6d4" />
+
+**Notes:** The attacker added the backdoor account to the `Domain Admins` group to gain full control over the domain.
 
 ---
 
@@ -1003,6 +1019,8 @@ EmberForgeX_CL
 
 <img width="364" height="71" alt="Task42" src="https://github.com/user-attachments/assets/91c78a6a-91c1-4da4-b650-dc79c41fcc6f" />
 
+**Notes**: The attacker accessed and modified the `AnyDesk` configuration file to maintain control.
+
 ---
 
 ## Flag 44 – Anti-Forensics Tools
@@ -1022,6 +1040,8 @@ EmberForgeX_CL
 ```
 
 <img width="863" height="317" alt="Task43" src="https://github.com/user-attachments/assets/22758f8d-a05a-4c9d-bf0a-b32f64b733e5" />
+
+**Notes**: The attacker used `wevtutil` to manipulate or clear Windows event logs and hide activity.
 
 ---
 
@@ -1043,6 +1063,8 @@ EmberForgeX_CL
 
 <img width="863" height="317" alt="Task43" src="https://github.com/user-attachments/assets/22758f8d-a05a-4c9d-bf0a-b32f64b733e5" />
 
+
+**Notes:** The attacker cleared the `System` and `Security` logs to remove evidence of their actions.
 
 
 
